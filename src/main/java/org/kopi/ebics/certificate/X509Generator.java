@@ -47,6 +47,8 @@ import org.bouncycastle.asn1.x509.SubjectKeyIdentifier;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.asn1.x509.X509Extensions;
 import org.bouncycastle.asn1.x509.X509Name;
+import org.bouncycastle.crypto.Digest;
+import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.jce.X509Principal;
 import org.bouncycastle.x509.X509V3CertificateGenerator;
 
@@ -243,7 +245,25 @@ public class X509Generator {
     input = new ByteArrayInputStream(publicKey.getEncoded());
     keyInfo = new SubjectPublicKeyInfo((ASN1Sequence)new ASN1InputStream(input).readObject());
 
-    return  new SubjectKeyIdentifier(keyInfo);
+    return  new SubjectKeyIdentifier(getDigestAsInSubjectKeyIdentifier144Source(keyInfo));
+
+
+  }
+
+  /**
+   * trying to fix backward comp issues
+   * @param spki
+   * @return
+   */
+  private static byte[] getDigestAsInSubjectKeyIdentifier144Source(SubjectPublicKeyInfo spki)
+  {
+    Digest digest = new SHA1Digest();
+    byte[]  resBuf = new byte[digest.getDigestSize()];
+
+    byte[] bytes = spki.getPublicKeyData().getBytes();
+    digest.update(bytes, 0, bytes.length);
+    digest.doFinal(resBuf, 0);
+    return resBuf;
   }
 
   /**

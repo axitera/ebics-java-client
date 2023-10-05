@@ -52,6 +52,7 @@ public interface Configuration {
    * Returns the EBICS configuration file.
    * @return the EBICS configuration file.
    */
+  //FIXME: why this unused ??
   public String getConfigurationFile();
 
   /**
@@ -203,4 +204,8 @@ public interface Configuration {
    * @return the version of the EBICS protocol.
    */
   public String getVersion();
+
+  public String getGlobalCountryCode();
+  public String getGlobalLanguageCode();
+
 }
