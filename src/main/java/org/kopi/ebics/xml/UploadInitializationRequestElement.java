@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import de.axitera.ebics.client.logging.IEbicsLogger;
 import org.kopi.ebics.exception.EbicsException;
 import org.kopi.ebics.interfaces.ContentFactory;
 import org.kopi.ebics.interfaces.EbicsOrderType;
@@ -65,19 +66,22 @@ public class UploadInitializationRequestElement extends InitializationRequestEle
 
 
 /**
-   * Constructs a new <code>UInitializationRequestElement</code> for uploads initializations.
-   * @param session the current ebics session.
-   * @param orderType the upload order type
-   * @param userData the user data to be uploaded
-   * @throws EbicsException
-   */
+ * Constructs a new <code>UInitializationRequestElement</code> for uploads initializations.
+ *
+ * @param session   the current ebics session.
+ * @param orderType the upload order type
+ * @param userData  the user data to be uploaded
+ * @param logger
+ * @throws EbicsException
+ */
   public UploadInitializationRequestElement(EbicsSession session,
-                                       EbicsOrderType orderType, OrderAttributeType.Enum orderAttribute,
-                                       byte[] userData)
+                                            EbicsOrderType orderType, OrderAttributeType.Enum orderAttribute,
+                                            byte[] userData, IEbicsLogger logger)
     throws EbicsException
   {
     super(session, orderType, generateName(orderType));
     this.userData = userData;
+    this.logger = logger;
     keySpec = new SecretKeySpec(nonce, "EAS");
     splitter = new Splitter(userData);
     this.orderAttribute = orderAttribute;
@@ -122,7 +126,7 @@ public class UploadInitializationRequestElement extends InitializationRequestEle
     orderType = EbicsXmlFactory.createOrderType(type.getCode());
     String format=session.getSessionParam("FORMAT");
 
-    session.getConfiguration().getLogger().info(" file format - null may cause error. File format is: "+format);
+    logger.info(" file format - null may cause error. File format is: "+format);
     fileFormat = EbicsXmlFactory.createFileFormatType(session.getConfiguration().getLocale().getCountry().toUpperCase(),format);	                                             
 
     String nextOrderId = session.getUser().getPartner().nextOrderId();
@@ -228,4 +232,6 @@ public class UploadInitializationRequestElement extends InitializationRequestEle
   private SecretKeySpec			keySpec;
   private Splitter			splitter;
   private static final long 		serialVersionUID = -8083183483311283608L;
+
+  private final IEbicsLogger logger;
 }

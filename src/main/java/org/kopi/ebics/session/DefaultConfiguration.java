@@ -50,13 +50,11 @@ public class DefaultConfiguration implements Configuration {
    * Creates a new application configuration.
    * @param rootDir the root directory
    */
-  public DefaultConfiguration(String rootDir, Properties properties) {
+  public DefaultConfiguration(String rootDir) {
     this.rootDir = rootDir;
     bundle = ResourceBundle.getBundle(RESOURCE_DIR);
-    this.properties = properties;
-    logger = new DefaultEbicsLogger();
     serializationManager = new DefaultSerializationManager();
-    traceManager = new DefaultTraceManager();
+
   }
 
   /**
@@ -96,13 +94,12 @@ public class DefaultConfiguration implements Configuration {
 
     //logger.setLogFile(getLogDirectory() + File.separator + getLogFileName());
     serializationManager.setSerializationDirectory(getSerializationDirectory());
-    traceManager.setTraceEnabled(isTraceEnabled());
-    letterManager = new DefaultLetterManager(getLocale());
+
   }
 
   @Override
   public Locale getLocale() {
-    return Locale.FRANCE;
+    return Locale.ENGLISH;
   }
 
   @Override
@@ -118,11 +115,6 @@ public class DefaultConfiguration implements Configuration {
   @Override
   public String getConfigurationFile() {
     return rootDir + File.separator + getString("conf.file.name");
-  }
-
-  @Override
-  public String getProperty(String key) {
-    return properties.getProperty(key);
   }
 
   @Override
@@ -166,16 +158,6 @@ public class DefaultConfiguration implements Configuration {
   }
 
   @Override
-  public TraceManager getTraceManager() {
-    return traceManager;
-  }
-
-  @Override
-  public LetterManager getLetterManager() {
-    return letterManager;
-  }
-
-  @Override
   public String getLettersDirectory(EbicsUser user) {
     return getUserDirectory(user) + File.separator + getString("letters.dir.name");
   }
@@ -183,11 +165,6 @@ public class DefaultConfiguration implements Configuration {
   @Override
   public String getUserDirectory(EbicsUser user) {
     return getUsersDirectory() + File.separator + user.getUserId();
-  }
-
-  @Override
-  public EbicsLogger getLogger() {
-    return logger;
   }
 
   @Override
@@ -225,17 +202,44 @@ public class DefaultConfiguration implements Configuration {
     return getString("ebics.version");
   }
 
+  @Override
+  public String getGlobalCountryCode() {
+    return null;
+  }
+
+  @Override
+  public String getGlobalLanguageCode() {
+    return null;
+  }
+
+  @Override
+  public String getHttpProxyHost() {
+    return null;
+  }
+
+  @Override
+  public String getHttpProxyPort() {
+    return null;
+  }
+
+  @Override
+  public String getHttpProxyUser() {
+    return null;
+  }
+
+  @Override
+  public String getHttpProxyPassword() {
+    return null;
+  }
+
   // --------------------------------------------------------------------
   // DATA MEMBERS
   // --------------------------------------------------------------------
 
   private final String rootDir;
   private final ResourceBundle bundle;
-  private final Properties properties;
-  private final EbicsLogger logger;
   private final SerializationManager serializationManager;
-  private final TraceManager traceManager;
-  private LetterManager letterManager;
+
 
   private static final String RESOURCE_DIR = "org.kopi.ebics.client.config";
 }

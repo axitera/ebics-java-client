@@ -25,7 +25,7 @@ import java.util.Locale;
 
 import org.kopi.ebics.exception.EbicsException;
 import org.kopi.ebics.interfaces.EbicsUser;
-import org.kopi.ebics.interfaces.InitLetter;
+import de.axitera.ebics.client.letter.IEbicsInitLetter;
 import org.kopi.ebics.interfaces.LetterManager;
 
 
@@ -47,7 +47,7 @@ public class DefaultLetterManager implements LetterManager {
   }
 
   @Override
-  public InitLetter createA005Letter(EbicsUser user)
+  public IEbicsInitLetter createA005Letter(EbicsUser user)
     throws GeneralSecurityException, IOException, EbicsException
   {
         A005Letter			letter;
@@ -58,7 +58,7 @@ public class DefaultLetterManager implements LetterManager {
   }
 
   @Override
-  public InitLetter createE002Letter(EbicsUser user)
+  public IEbicsInitLetter createE002Letter(EbicsUser user)
     throws GeneralSecurityException, IOException, EbicsException
   {
         E002Letter			letter;
@@ -69,7 +69,7 @@ public class DefaultLetterManager implements LetterManager {
   }
 
   @Override
-  public InitLetter createX002Letter(EbicsUser user)
+  public IEbicsInitLetter createX002Letter(EbicsUser user)
     throws GeneralSecurityException, IOException, EbicsException
   {
         X002Letter			letter;

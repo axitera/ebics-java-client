@@ -47,11 +47,11 @@ import org.kopi.ebics.interfaces.Configuration;
 import org.kopi.ebics.interfaces.EbicsBank;
 import org.kopi.ebics.interfaces.EbicsOrderType;
 import org.kopi.ebics.interfaces.EbicsUser;
-import org.kopi.ebics.interfaces.InitLetter;
+import de.axitera.ebics.client.letter.IEbicsInitLetter;
 import org.kopi.ebics.interfaces.LetterManager;
 import org.kopi.ebics.interfaces.PasswordCallback;
 import org.kopi.ebics.io.IOUtils;
-import org.kopi.ebics.messages.Messages;
+import de.axitera.ebics.client.i18n.GenericTextProvider;
 import org.kopi.ebics.schema.h003.OrderAttributeType;
 import org.kopi.ebics.session.DefaultConfiguration;
 import org.kopi.ebics.session.EbicsSession;
@@ -65,14 +65,15 @@ import org.kopi.ebics.utils.Constants;
  * also performs the files transfer including uploads and downloads.
  *
  */
-public class EbicsClient {
-
+@Deprecated
+public class EbicsClient {}
+/*
     private final Configuration configuration;
     private final Map<String, User> users = new HashMap<>();
     private final Map<String, Partner> partners = new HashMap<>();
     private final Map<String, Bank> banks = new HashMap<>();
     private final ConfigProperties properties;
-    private final Messages messages;
+    private final GenericTextProvider messages;
     private Product defaultProduct;
     private User defaultUser;
 
@@ -81,18 +82,18 @@ public class EbicsClient {
         java.security.Security.addProvider(new BouncyCastleProvider());
     }
 
-    /**
+
      * Constructs a new ebics client application
      *
      * @param configuration
      *            the application configuration
      * @param properties
-     */
+
     public EbicsClient(Configuration configuration, ConfigProperties properties) {
         this.configuration = configuration;
         this.properties = properties;
-        Messages.setLocale(configuration.getLocale());
-        this.messages = new Messages(Constants.APPLICATION_BUNDLE_NAME, configuration.getLocale());
+        GenericTextProvider.reInitWithNewLocale(configuration.getLocale());
+        this.messages = new GenericTextProvider(Constants.APPLICATION_BUNDLE_NAME, configuration.getLocale());
         configuration.getLogger().info(messages.getString("init.configuration"));
         configuration.init();
     }
@@ -108,7 +109,7 @@ public class EbicsClient {
      *
      * @param user
      *            the concerned user
-     */
+
     public void createUserDirectories(EbicsUser user) {
         configuration.getLogger().info(
             messages.getString("user.create.directories", user.getUserId()));
@@ -131,7 +132,7 @@ public class EbicsClient {
      * @param useCertificate
      *            does the bank use certificates ?
      * @return the created ebics bank
-     */
+
     private Bank createBank(URL url, String name, String hostId, boolean useCertificate) {
         Bank bank = new Bank(url, name, hostId, useCertificate);
         banks.put(hostId, bank);
@@ -145,7 +146,7 @@ public class EbicsClient {
      *            the bank
      * @param partnerId
      *            the partner IDqr
-     */
+
     private Partner createPartner(EbicsBank bank, String partnerId) {
         Partner partner = new Partner(bank, partnerId);
         partners.put(partnerId, partner);
@@ -182,7 +183,7 @@ public class EbicsClient {
      *            parameter can be null, in this case no password is used.
      * @return
      * @throws Exception
-     */
+
     public User createUser(URL url, String bankName, String hostId, String partnerId,
         String userId, String name, String email, String country, String organization,
         boolean useCertificates, boolean saveCertificates, PasswordCallback passwordCallback)
@@ -218,11 +219,11 @@ public class EbicsClient {
         throws GeneralSecurityException, IOException, EbicsException {
         user.getPartner().getBank().setUseCertificate(useCertificates);
         LetterManager letterManager = configuration.getLetterManager();
-        List<InitLetter> letters = Arrays.asList(letterManager.createA005Letter(user),
+        List<IEbicsInitLetter> letters = Arrays.asList(letterManager.createA005Letter(user),
             letterManager.createE002Letter(user), letterManager.createX002Letter(user));
 
         File directory = new File(configuration.getLettersDirectory(user));
-        for (InitLetter letter : letters) {
+        for (IEbicsInitLetter letter : letters) {
             try (FileOutputStream out = new FileOutputStream(new File(directory, letter.getName()))) {
                 letter.writeTo(out);
             }
@@ -233,7 +234,7 @@ public class EbicsClient {
      * Loads a user knowing its ID
      *
      * @throws Exception
-     */
+
     public User loadUser(String hostId, String partnerId, String userId,
         PasswordCallback passwordCallback) throws Exception {
         configuration.getLogger().info(messages.getString("user.load.info", userId));
@@ -271,7 +272,7 @@ public class EbicsClient {
      * @param user the user
      * @param product the application product
      * @throws Exception
-     */
+
     public void sendINIRequest(User user, Product product) throws Exception {
         String userId = user.getUserId();
         configuration.getLogger().info(messages.getString("ini.request.send", userId));
@@ -280,7 +281,7 @@ public class EbicsClient {
             return;
         }
         EbicsSession session = createSession(user, product);
-        KeyManagement keyManager = new KeyManagement(session);
+        KeyManagement keyManager = new KeyManagement(session, traceManager);
         configuration.getTraceManager().setTraceDirectory(
             configuration.getTransferTraceDirectory(user));
         try {
@@ -301,7 +302,7 @@ public class EbicsClient {
      * @param product
      *            the application product.
      * @throws Exception
-     */
+
     public void sendHIARequest(User user, Product product) throws Exception {
         String userId = user.getUserId();
         configuration.getLogger().info(messages.getString("hia.request.send", userId));
@@ -311,7 +312,7 @@ public class EbicsClient {
             return;
         }
         EbicsSession session = createSession(user, product);
-        KeyManagement keyManager = new KeyManagement(session);
+        KeyManagement keyManager = new KeyManagement(session, traceManager);
         configuration.getTraceManager().setTraceDirectory(
             configuration.getTransferTraceDirectory(user));
         try {
@@ -326,13 +327,13 @@ public class EbicsClient {
 
     /**
      * Sends a HPB request to the ebics server.
-     */
+
     public void sendHPBRequest(User user, Product product) throws Exception {
         String userId = user.getUserId();
         configuration.getLogger().info(messages.getString("hpb.request.send", userId));
 
         EbicsSession session = createSession(user, product);
-        KeyManagement keyManager = new KeyManagement(session);
+        KeyManagement keyManager = new KeyManagement(session, traceManager);
 
         configuration.getTraceManager().setTraceDirectory(
             configuration.getTransferTraceDirectory(user));
@@ -354,14 +355,14 @@ public class EbicsClient {
      * @param product
      *            the session product
      * @throws Exception
-     */
+
     public void revokeSubscriber(User user, Product product) throws Exception {
         String userId = user.getUserId();
 
         configuration.getLogger().info(messages.getString("spr.request.send", userId));
 
         EbicsSession session = createSession(user, product);
-        KeyManagement keyManager = new KeyManagement(session);
+        KeyManagement keyManager = new KeyManagement(session, traceManager);
 
         configuration.getTraceManager().setTraceDirectory(
             configuration.getTransferTraceDirectory(user));
@@ -379,7 +380,7 @@ public class EbicsClient {
     /**
      * Sends a file to the ebics bank server
      * @throws Exception
-     */
+
     public void sendFile(File file, User user, Product product, EbicsOrderType orderType) throws Exception {
         EbicsSession session = createSession(user, product);
         OrderAttributeType.Enum orderAttribute = OrderAttributeType.OZHNN;
@@ -438,7 +439,7 @@ public class EbicsClient {
 
     /**
      * Performs buffers save before quitting the client application.
-     */
+
     public void quit() {
         try {
             for (User user : users.values()) {
@@ -694,3 +695,4 @@ public class EbicsClient {
         return file;
     }
 }
+*/

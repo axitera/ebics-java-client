@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Locale;
 
+import de.axitera.ebics.client.letter.AbstractInitLetter;
 import org.apache.commons.codec.binary.Base64;
 import org.kopi.ebics.exception.EbicsException;
 import org.kopi.ebics.interfaces.EbicsUser;

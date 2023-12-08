@@ -61,7 +61,7 @@ public interface Configuration {
    * @param key the given key
    * @return the property value
    */
-  public String getProperty(String key);
+  //public String getProperty(String key);
 
   /**
    * Returns the directory path of the key store that contains
@@ -119,13 +119,13 @@ public interface Configuration {
    * Returns the Ebics client trace manager.
    * @return the Ebics client trace manager.
    */
-  public TraceManager getTraceManager();
+ // public TraceManager getTraceManager();
 
   /**
    * Returns the letter manager.
    * @return the letter manager.
    */
-  public LetterManager getLetterManager();
+ // public LetterManager getLetterManager();
 
   /**
    * Returns the initializations letters directory.
@@ -143,7 +143,7 @@ public interface Configuration {
    * Returns the client application logger.
    * @return the client application logger.
    */
-  public EbicsLogger getLogger();
+ // public EbicsLogger getLogger();
 
   /**
    * Configuration initialization.
@@ -208,4 +208,11 @@ public interface Configuration {
   public String getGlobalCountryCode();
   public String getGlobalLanguageCode();
 
+  String getHttpProxyHost();
+
+  String getHttpProxyPort();
+
+  String getHttpProxyUser();
+
+  String getHttpProxyPassword();
 }

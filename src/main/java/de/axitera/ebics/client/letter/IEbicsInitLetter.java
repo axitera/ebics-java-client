@@ -17,13 +17,14 @@
  * $Id$
  */
 
-package org.kopi.ebics.interfaces;
+package de.axitera.ebics.client.letter;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 
 import org.kopi.ebics.exception.EbicsException;
+import org.kopi.ebics.interfaces.EbicsUser;
 
 
 /**
@@ -34,7 +35,7 @@ import org.kopi.ebics.exception.EbicsException;
  * @author Hachani
  *
  */
-public interface InitLetter {
+public interface IEbicsInitLetter {
 
   /**
    * Creates an <code>InitLetter</code> for a given <code>EbicsUser</code>

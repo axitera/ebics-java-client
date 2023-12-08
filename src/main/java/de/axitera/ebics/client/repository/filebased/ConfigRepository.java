@@ -1,5 +1,6 @@
-package de.axitera.ebics.client.repository;
+package de.axitera.ebics.client.repository.filebased;
 
+import de.axitera.ebics.client.repository.IConfigRepository;
 import org.kopi.ebics.interfaces.Configuration;
 
 public class ConfigRepository implements IConfigRepository {

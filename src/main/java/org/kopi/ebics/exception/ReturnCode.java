@@ -21,9 +21,10 @@ package org.kopi.ebics.exception;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
-import org.kopi.ebics.messages.Messages;
+import de.axitera.ebics.client.i18n.GenericTextProvider;
 
 
 /**
@@ -38,15 +39,14 @@ public class ReturnCode implements Serializable {
 
   /**
    * Constructs a new <code>ReturnCode</code> with a given
-   * standard code, symbolic name and text
+   * standard code, symbolic name and text.
+   * Text is read from translation table in resources.
    * @param code the given standard code.
    * @param symbolicName the symbolic name.
-   * @param text the code text
    */
-  public ReturnCode(String code, String symbolicName, String text) {
+  public ReturnCode(String code, String symbolicName) {
     this.code = code;
     this.symbolicName = symbolicName;
-    this.text = text;
   }
 
   /**
@@ -54,7 +54,7 @@ public class ReturnCode implements Serializable {
    * @throws EbicsException
    */
   public void throwException() throws EbicsException {
-    throw new EbicsException(this, text);
+    throw new EbicsException(this, getText());
   }
 
   /**
@@ -74,11 +74,21 @@ public class ReturnCode implements Serializable {
   }
 
   /**
-   * Returns a display text for the default locale.
+   * Returns a display text for the given locale.
+   * @return a text that can be displayed.
+   */
+  public String getText(Locale locale) {
+    final GenericTextProvider messages = new GenericTextProvider(BUNDLE_NAME,locale);
+    return messages.getString(code);
+  }
+
+  /**
+   * Returns a display text for english locale.
    * @return a text that can be displayed.
    */
   public String getText() {
-    return text;
+    final GenericTextProvider messages = new GenericTextProvider(BUNDLE_NAME,Locale.ENGLISH);
+    return messages.getString(code);
   }
 
   /**
@@ -92,15 +102,15 @@ public class ReturnCode implements Serializable {
   /**
    * Returns the equivalent <code>ReturnCode</code> of a given code
    * @param code the given code
-   * @param text the given code text
+   * @param symbolicName the given code symbolicName
    * @return the equivalent <code>ReturnCode</code>
    */
-  public static ReturnCode toReturnCode(String code, String text) {
+  public static ReturnCode toReturnCode(String code, String symbolicName) {
       ReturnCode returnCode = returnCodes.get(code);
       if (returnCode != null) {
           return returnCode;
       }
-      return new ReturnCode(code, text, text);
+      return new ReturnCode(code, symbolicName);
   }
 
   @Override
@@ -119,7 +129,7 @@ public class ReturnCode implements Serializable {
 
   @Override
   public String toString() {
-    return code + " " + symbolicName + " " + text;
+    return code + " " + symbolicName + " " + getText();
   }
 
   // --------------------------------------------------------------------
@@ -128,7 +138,6 @@ public class ReturnCode implements Serializable {
 
   private final String			code;
   private final String			symbolicName;
-  private final String			text;
   public static final ReturnCode 	EBICS_OK;
   public static final ReturnCode 	EBICS_DOWNLOAD_POSTPROCESS_DONE;
   public static final ReturnCode 	EBICS_DOWNLOAD_POSTPROCESS_SKIPPED;
@@ -158,7 +167,7 @@ public class ReturnCode implements Serializable {
   private static final long 		serialVersionUID = -497883146384363199L;
 
   private static final Map<String, ReturnCode> returnCodes = new HashMap<>();
-  private static final Messages messages = new Messages(BUNDLE_NAME);
+
 
   static {
     EBICS_OK = create("000000", "EBICS_OK");
@@ -190,11 +199,8 @@ public class ReturnCode implements Serializable {
   }
 
   private static ReturnCode create(String code, String symbolicName) {
-    String text = messages.getString(code);
-    if (text == null) {
-      throw new NullPointerException("No text for code: " + code);
-    }
-    ReturnCode returnCode = new ReturnCode(code, symbolicName, text);
+
+    ReturnCode returnCode = new ReturnCode(code, symbolicName);
     ReturnCode prev = returnCodes.put(code, returnCode);
     if (prev != null) {
       throw new IllegalStateException("Duplicated code: " + code);

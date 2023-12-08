@@ -22,6 +22,7 @@ package org.kopi.ebics.interfaces;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+import de.axitera.ebics.client.letter.IEbicsInitLetter;
 import org.kopi.ebics.exception.EbicsException;
 
 
@@ -44,7 +45,7 @@ public interface LetterManager {
    * @throws IOException
    * @throws GeneralSecurityException
    */
-  public InitLetter createA005Letter(EbicsUser user)
+  public IEbicsInitLetter createA005Letter(EbicsUser user)
     throws GeneralSecurityException, IOException, EbicsException;
 
   /**
@@ -57,7 +58,7 @@ public interface LetterManager {
    * @throws IOException
    * @throws GeneralSecurityException
    */
-  public InitLetter createE002Letter(EbicsUser user)
+  public IEbicsInitLetter createE002Letter(EbicsUser user)
     throws GeneralSecurityException, IOException, EbicsException;
 
   /**
@@ -70,6 +71,6 @@ public interface LetterManager {
    * @throws IOException
    * @throws GeneralSecurityException
    */
-  public InitLetter createX002Letter(EbicsUser user)
+  public IEbicsInitLetter createX002Letter(EbicsUser user)
     throws GeneralSecurityException, IOException, EbicsException;
 }

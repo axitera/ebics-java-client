@@ -8,6 +8,7 @@ import org.kopi.ebics.session.DefaultConfiguration;
 import org.kopi.ebics.session.OrderType;
 import org.kopi.ebics.session.Product;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -70,12 +71,13 @@ public class CommandLineProcessor {
         File ebicsClientProperties = new File(defaultRootDir, "ebics.txt");
         EbicsClient client = createEbicsClient(defaultRootDir, ebicsClientProperties);
 
+        /*
         if (cmd.hasOption("create")) {
             client.createDefaultUser();
         } else {
             client.loadDefaultUser();
         }
-        
+        */
         //FIXME: load user and product.
         User user = null;
         Product product = null;
@@ -148,29 +150,32 @@ public class CommandLineProcessor {
     }
 
     public static EbicsClient createEbicsClient(File rootDir, File configFile) throws IOException {
+        //TODO: create file based repos then init
+/*
         EbicsClient.ConfigProperties properties = new EbicsClient.ConfigProperties(configFile);
         final String country = properties.get("countryCode").toUpperCase();
         final String language = properties.get("languageCode").toLowerCase();
         final String productName = properties.get("productName");
-
+*/
+        /*
         final Locale locale = new Locale(language, country);
 
         DefaultConfiguration configuration = new DefaultConfiguration(
-                rootDir.getAbsolutePath(),
-                properties.properties) {
+                rootDir.getAbsolutePath() ){
 
             @Override
             public Locale getLocale() {
                 return locale;
             }
         };
+*/
+   //     EbicsClient client = new EbicsClient(configuration);
 
-        EbicsClient client = new EbicsClient(configuration, properties);
-
-        Product product = new Product(productName, language, null);
+   //     Product product = new Product(productName, language, null);
         //fixme WHAT TO DO ABOUT PRODUICT
 
-        return client;
+   //     return client;
+        throw new RuntimeException("NOT IMPLEMENTED");
     }
 
     private static File getOutputFile(String outputFileName) {

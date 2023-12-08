@@ -23,7 +23,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.interfaces.RSAPublicKey;
 
@@ -31,6 +30,7 @@ import org.kopi.ebics.certificate.KeyStoreManager;
 import org.kopi.ebics.certificate.KeyUtil;
 import org.kopi.ebics.exception.EbicsException;
 import org.kopi.ebics.interfaces.ContentFactory;
+import org.kopi.ebics.interfaces.TraceManager;
 import org.kopi.ebics.io.ByteArrayContentFactory;
 import org.kopi.ebics.session.EbicsSession;
 import org.kopi.ebics.utils.Utils;
@@ -54,13 +54,18 @@ import org.kopi.ebics.xml.SPRResponseElement;
  */
 public class KeyManagement {
 
+  
+  
   /**
    * Constructs a new <code>KeyManagement</code> instance
    * with a given ebics session
-   * @param session the ebics session
+   *
+   * @param session      the ebics session
+   * @param traceManager
    */
-  public KeyManagement(EbicsSession session) {
+  public KeyManagement(EbicsSession session, TraceManager traceManager) {
     this.session = session;
+    this.traceManager = traceManager;
   }
 
   /**
@@ -80,12 +85,12 @@ public class KeyManagement {
     request = new INIRequestElement(session, orderId);
     request.build();
     request.validate();
-    session.getConfiguration().getTraceManager().trace(request);
+    traceManager.trace(request);
     httpCode = sender.send(new ByteArrayContentFactory(request.prettyPrint()));
     Utils.checkHttpCode(httpCode);
     response = new KeyManagementResponseElement(sender.getResponseBody(), "INIResponse");
     response.build();
-    session.getConfiguration().getTraceManager().trace(response);
+    traceManager.trace(response);
     response.report();
   }
 
@@ -105,12 +110,12 @@ public class KeyManagement {
     request = new HIARequestElement(session, orderId);
     request.build();
     request.validate();
-    session.getConfiguration().getTraceManager().trace(request);
+    traceManager.trace(request);
     httpCode = sender.send(new ByteArrayContentFactory(request.prettyPrint()));
     Utils.checkHttpCode(httpCode);
     response = new KeyManagementResponseElement(sender.getResponseBody(), "HIAResponse");
     response.build();
-    session.getConfiguration().getTraceManager().trace(response);
+    traceManager.trace(response);
     response.report();
   }
 
@@ -138,17 +143,17 @@ public class KeyManagement {
     request = new HPBRequestElement(session);
     request.build();
     request.validate();
-    session.getConfiguration().getTraceManager().trace(request);
+    traceManager.trace(request);
     httpCode = sender.send(new ByteArrayContentFactory(request.prettyPrint()));
     Utils.checkHttpCode(httpCode);
     response = new KeyManagementResponseElement(sender.getResponseBody(), "HBPResponse");
     response.build();
-    session.getConfiguration().getTraceManager().trace(response);
+    traceManager.trace(response);
     response.report();
     factory = new ByteArrayContentFactory(Utils.unzip(session.getUser().decrypt(response.getOrderData(), response.getTransactionKey())));
     orderData = new HPBResponseOrderDataElement(factory);
     orderData.build();
-    session.getConfiguration().getTraceManager().trace(orderData);
+    traceManager.trace(orderData);
     keystoreManager = new KeyStoreManager();
     path = session.getConfiguration().getKeystoreDirectory(session.getUser());
     keystoreManager.load("" , session.getUser().getPasswordCallback().getPassword());
@@ -192,12 +197,12 @@ public class KeyManagement {
     request = new SPRRequestElement(session);
     request.build();
     request.validate();
-    session.getConfiguration().getTraceManager().trace(request);
+    traceManager.trace(request);
     httpCode = sender.send(new ByteArrayContentFactory(request.prettyPrint()));
     Utils.checkHttpCode(httpCode);
     response = new SPRResponseElement(sender.getResponseBody());
     response.build();
-    session.getConfiguration().getTraceManager().trace(response);
+    traceManager.trace(response);
     response.report();
   }
 
@@ -206,4 +211,6 @@ public class KeyManagement {
   // --------------------------------------------------------------------
 
   private EbicsSession 				session;
+  
+  private final TraceManager  traceManager;
 }

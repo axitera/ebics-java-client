@@ -77,18 +77,18 @@ public class HttpRequestSender {
             300_000).setConnectTimeout(300_000);
 
         Configuration conf = session.getConfiguration();
-        String proxyHost = conf.getProperty("http.proxy.host");
+        String proxyHost = conf.getHttpProxyHost();
         CredentialsProvider credsProvider = null;
 
         if (proxyHost != null && !proxyHost.equals("")) {
-            int proxyPort = Integer.parseInt(conf.getProperty("http.proxy.port").trim());
+            int proxyPort = Integer.parseInt(conf.getHttpProxyPort().trim());
             HttpHost proxy = new HttpHost(proxyHost.trim(), proxyPort);
             configBuilder.setProxy(proxy);
 
-            String user = conf.getProperty("http.proxy.user");
+            String user = conf.getHttpProxyUser();
             if (user != null && !user.equals("")) {
                 user = user.trim();
-                String pwd = conf.getProperty("http.proxy.password").trim();
+                String pwd = conf.getHttpProxyPassword().trim();
                 credsProvider = new BasicCredentialsProvider();
                 credsProvider.setCredentials(new AuthScope(proxyHost, proxyPort),
                     new UsernamePasswordCredentials(user, pwd));

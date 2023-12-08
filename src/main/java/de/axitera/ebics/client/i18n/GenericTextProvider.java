@@ -17,7 +17,7 @@
  * $Id$
  */
 
-package org.kopi.ebics.messages;
+package de.axitera.ebics.client.i18n;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -28,20 +28,21 @@ import java.util.ResourceBundle;
  * A class to manage application messages.
  *
  */
-public class Messages {
+public class GenericTextProvider implements ITranslatedTextProvider{
 
-  private static Locale defaultLocale = Locale.ENGLISH;
-  private final Locale locale;
+
+  private Locale locale;
   private final ResourceBundle resourceBundle;
+  private final String bundleName;
 
-  public Messages(String bundleName, Locale locale) {
+  public GenericTextProvider(String bundleName, Locale locale) {
     this.locale = locale;
-    this.resourceBundle = getBundle(bundleName, locale);
+    this.bundleName = bundleName;
+    this.resourceBundle = loadBundle();
   }
 
-  public Messages(String bundleName) {
-    this(bundleName, defaultLocale);
-  }
+
+
 
   /**
    * Return the corresponding value of a given key and string parameter.
@@ -72,7 +73,17 @@ public class Messages {
     }
   }
 
-  private static ResourceBundle getBundle(String bundleName, Locale locale) {
+  public void reInitWithNewLocale(Locale locale) {
+    this.locale = locale;
+    loadBundle();
+  }
+
+  private ResourceBundle loadBundle() {
+    return getBundle(bundleName, locale);
+  }
+
+
+  private  ResourceBundle getBundle(String bundleName, Locale locale) {
     try {
       return ResourceBundle.getBundle(bundleName, locale);
     } catch (MissingResourceException e) {
@@ -84,7 +95,6 @@ public class Messages {
     }
   }
 
-  public static void setLocale(Locale locale) {
-    Messages.defaultLocale = locale;
-  }
+
+
 }

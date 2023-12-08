@@ -5,15 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Locale;
 
+import de.axitera.ebics.client.i18n.GenericTextProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
-class MessagesTest {
+class GenericTextProviderTest {
 
     @Test
     void getString() {
         // fallback to english
-        Messages messages = new Messages("org.kopi.ebics.letter.messages", Locale.CHINA);
+        GenericTextProvider messages = new GenericTextProvider("org.kopi.ebics.letter.messages", Locale.CHINA);
         assertEquals("dd.MM.yyyy", messages.getString("Letter.dateFormat"));
     }
 
@@ -22,7 +23,7 @@ class MessagesTest {
         assertThrows(RuntimeException.class, new Executable() {
             @Override
             public void execute() {
-                new Messages("org.kopi.ebics.letter.messages_unknown");
+                new GenericTextProvider("org.kopi.ebics.letter.messages_unknown");
             }
         });
     }

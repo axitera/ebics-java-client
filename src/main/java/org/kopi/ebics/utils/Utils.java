@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Locale;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -42,7 +43,7 @@ import org.apache.xml.security.utils.IgnoreAllErrorHandler;
 import org.apache.xpath.XPathAPI;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.kopi.ebics.exception.EbicsException;
-import org.kopi.ebics.messages.Messages;
+import de.axitera.ebics.client.i18n.GenericTextProvider;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
@@ -316,7 +317,7 @@ public final class Utils {
    */
   public static void checkHttpCode(int httpCode) throws EbicsException {
     if (httpCode != 200) {
-      Messages messages = new Messages(Constants.APPLICATION_BUNDLE_NAME);
+      GenericTextProvider messages = new GenericTextProvider(Constants.APPLICATION_BUNDLE_NAME, Locale.ENGLISH);
       throw new EbicsException(messages.getString("http.code.error", httpCode));
     }
   }
