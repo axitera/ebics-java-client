@@ -1,30 +1,33 @@
 package de.axitera.ebics.client.repository.filebased;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.axitera.ebics.client.repository.IUserRepository;
 import org.kopi.ebics.client.User;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class UserRepository implements IUserRepository {
+public class UserRepository extends AbstractFileBasedRepo<User> implements IUserRepository {
 
-    @Override
-    public void put(User user) {
 
+    protected UserRepository(File folder) {
+        super(folder);
     }
 
     @Override
-    public User getById(String id) {
-        return null;
+    Class<User> getClassOfT() {
+        return User.class;
     }
 
     @Override
-    public List<User> getAll() {
-        return null;
+    String getUniqueFileNameForData(User data) {
+        return data.getUserId();
     }
 
-    @Override
-    public List<String> getAllIds() {
-        return null;
-    }
+
+
 
 }
